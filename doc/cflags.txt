@@ -1,0 +1,14 @@
+*cflags* CFlags
+
+===============================================================================
+Contents ~
+
+g:cflags_fn
+Set flags file full path.
+
+g:cflags_debug
+Set debug print level
+
+<C-K>
+Show define value
+
