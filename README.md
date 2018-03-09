@@ -18,6 +18,6 @@ Set debug print level
 
 ## Key bindings
 
-### <C-K>
+### \<C-K\>
 Show define value under cursor
 
