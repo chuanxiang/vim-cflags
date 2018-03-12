@@ -1,4 +1,3 @@
-
 if (exists('g:loaded_cflags') || &cp)
     finish
 endif
@@ -19,12 +18,6 @@ function! s:DebugPrint(level, text)
   endif
 endfunction
 
-if (!exists('g:cflags_fn'))
-    call s:DebugPrint(1, "g:cflags_fn not defined")
-    finish
-endif
-
-
 python << EOF
 import vim
 import os
@@ -34,7 +27,6 @@ import re
 if 'g_last_flag_file_stat' not in globals():
     g_last_flag_file_stat = {}
 
-g_flag_file_path = vim.eval('g:cflags_fn')
 g_showed_err = False
 
 def pyFindFlag(flagfn, flagstr='', ret_dict=False):
@@ -163,6 +155,7 @@ LINE_DEF_M = re.compile(r'^\s*#\s*(if|elif)\s+(?P<flag>.+)\s*')
 def pyAddDefinesFromBuffer():
     defines = ClassDefines()
     b = vim.current.buffer
+    g_flag_file_path = vim.eval('g:cflags_fn')
     for i in range(len(b)):
         line = b[i].strip()
         pos = line.find(r'//')
@@ -181,16 +174,23 @@ EOF
 
 
 function! FindFlag(flagstr)
+    if (!exists('g:cflags_fn'))
+        return
+    endif
 python << EOF
-    flagstr = vim.eval("a:flagstr")
-    pyFindFlag(g_flag_file_path, flagstr)
+flagstr = vim.eval("a:flagstr")
+g_flag_file_path = vim.eval('g:cflags_fn')
+pyFindFlag(g_flag_file_path, flagstr)
 EOF
 endfunction
 
 
 function! AddDefinesFromBuffer()
+    if (!exists('g:cflags_fn'))
+        return
+    endif
 python <<EOF
-    pyAddDefinesFromBuffer()
+pyAddDefinesFromBuffer()
 EOF
 endfunction
 
@@ -217,7 +217,7 @@ nnoremap <silent> <C-J> : call AddDefinesFromBuffer()<cr>
 augroup test_group1
     autocmd!
 " autocmd BufWinLeave * exec 'echom "  -> hidden:' . escape(expand("%:p"), '\') . '"'
-    autocmd BufWinEnter * call AddDefinesFromBuffer()
+    autocmd BufWinEnter,BufEnter * call AddDefinesFromBuffer()
 augroup END
 
 
