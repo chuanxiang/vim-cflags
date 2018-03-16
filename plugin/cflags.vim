@@ -8,7 +8,7 @@ if (!exists('g:cflags_debug'))
     let g:cflags_debug = 0
 endif
 
-if !( has('python') || has('python3') )
+if !has('python3')
     finish
 endif
 
@@ -18,7 +18,7 @@ function! s:DebugPrint(level, text)
   endif
 endfunction
 
-python << EOF
+python3 << EOF
 import vim
 import os
 import sys
@@ -34,7 +34,7 @@ def pyFindFlag(flagfn, flagstr='', ret_dict=False):
     global g_showed_err
     if not os.path.isfile(flagfn):
         if not g_showed_err:
-            print "File [%s] does NOT exist!" % flagfn
+            print("File [%s] does NOT exist!" % flagfn)
             g_showed_err = True
         if ret_dict:
             return {}
@@ -177,7 +177,7 @@ function! FindFlag(flagstr)
     if (!exists('g:cflags_fn'))
         return
     endif
-python << EOF
+python3 << EOF
 flagstr = vim.eval("a:flagstr")
 g_flag_file_path = vim.eval('g:cflags_fn')
 pyFindFlag(g_flag_file_path, flagstr)
@@ -189,7 +189,7 @@ function! AddDefinesFromBuffer()
     if (!exists('g:cflags_fn'))
         return
     endif
-python <<EOF
+python3 <<EOF
 pyAddDefinesFromBuffer()
 EOF
 endfunction
